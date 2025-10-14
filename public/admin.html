@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin - Gejala Cabai</title>
+<style>
+  /* ===== Reset & Global ===== */
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { background:#f0f2f5; color:#333; display:flex; min-height:100vh; }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 240px;
+    background:#16a34a;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    padding:30px 20px;
+    border-radius:0 12px 12px 0;
+  }
+  .sidebar h2 {
+    font-size:24px;
+    margin-bottom:40px;
+    text-align:center;
+    font-weight:600;
+  }
+  .sidebar a {
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    margin-bottom:10px;
+    font-weight:500;
+    transition:0.2s;
+  }
+  .sidebar a:hover { background:rgba(255,255,255,0.15); }
+
+  /* ===== Topbar ===== */
+  .topbar {
+    background:white;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    border-bottom:1px solid #ddd;
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    border-radius:12px;
+    margin-bottom:25px;
+  }
+  .topbar h3 { font-size:20px; color:#16a34a; }
+
+  .topbar input {
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    width:200px;
+  }
+
+  /* ===== Main Content ===== */
+  .main { flex:1; display:flex; flex-direction:column; padding:20px; }
+
+  /* ===== Cards ===== */
+  .card {
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.06);
+    margin-bottom:25px;
+  }
+  .card h1 { font-size:28px; margin-bottom:20px; color:#16a34a; }
+
+  /* ===== Form ===== */
+  .form-container {
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:25px;
+  }
+  .form-container input {
+    padding:12px 15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    flex:1;
+    transition:0.2s;
+  }
+  .form-container input:focus {
+    border-color:#16a34a;
+    outline:none;
+    box-shadow:0 0 6px rgba(22,163,74,0.3);
+  }
+  .form-container button {
+    padding:12px 24px;
+    border:none;
+    border-radius:8px;
+    background:#16a34a;
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+  }
+  .form-container button:hover { background:#13803d; }
+
+  /* ===== Table ===== */
+  .table-container { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; min-width:600px; border-radius:10px; overflow:hidden; }
+  th, td { padding:15px 12px; text-align:left; }
+  th { background:#16a34a; color:white; font-weight:600; }
+  tr:nth-child(even) { background:#f9fafb; }
+  tr:hover { background:#f0fff0; transition:0.2s; }
+
+  button.btn-edit { background:#f59e0b; color:white; border:none; border-radius:6px; padding:6px 14px; cursor:pointer; transition:0.2s; }
+  button.btn-edit:hover { background:#b45309; }
+  button.btn-delete { background:#dc2626; color:white; border:none; border-radius:6px; padding:6px 14px; cursor:pointer; transition:0.2s; }
+  button.btn-delete:hover { background:#991b1b; }
+
+  /* ===== Responsive ===== */
+  @media(max-width:768px) {
+    body { flex-direction:column; }
+    .sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:20px 10px; border-radius:0; }
+    .sidebar h2 { display:none; }
+    .sidebar a { margin-bottom:0; margin-right:10px; white-space:nowrap; }
+    .topbar input { width:120px; }
+    .form-container { flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Admin</h2>
+  <a href="#">Dashboard</a>
+  <a href="#">Gejala</a>
+  <a href="#">Penyakit</a>
+  <a href="#">Pengguna</a>
+  <a href="#">Logout</a>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h3>Dashboard Gejala Cabai</h3>
+    <input type="text" placeholder="Search...">
+  </div>
+
+  <div class="card">
+    <h1>Kelola Gejala</h1>
+    <div class="form-container">
+      <input type="text" id="codeInput" placeholder="Kode Gejala">
+      <input type="text" id="nameInput" placeholder="Nama Gejala">
+      <button id="addBtn">Tambah Gejala</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Kode</th>
+            <th>Nama</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="symptomsTable">
+          <!-- Data JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

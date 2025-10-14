@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Pakar Cabai - Diagnosa Penyakit</title>
+<style>
+  /* ===== Reset & Dasar ===== */
+  * { margin:0; padding:0; box-sizing:border-box; font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+  html { scroll-behavior: smooth; }
+  body { background:#f8fafc; color:#0a0a0a; line-height:1.6; }
+
+  .container { max-width:800px; margin:0 auto; padding:20px; }
+
+  /* ===== Header ===== */
+  header { display:flex; justify-content:space-between; align-items:center; padding:15px 0; margin-bottom:20px; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-circle { width:40px; height:40px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:20px; }
+  .logo-text { font-size:18px; font-weight:600; color:#16a34a; }
+  .back-btn { background:#f0f0f0; border:1px solid #ddd; padding:8px 16px; border-radius:8px; text-decoration:none; color:#333; font-size:14px; transition:0.2s; }
+  .back-btn:hover { background:#e0e0e0; }
+
+  /* ===== Hero ===== */
+  .hero { background:#16a34a1a; padding:25px 20px; border-radius:12px; margin-bottom:25px; text-align:center; }
+  .hero h1 { color:#16a34a; font-size:1.8rem; margin-bottom:10px; }
+  .hero p { color:#4b5563; font-size:1rem; }
+
+  /* ===== Form gejala ===== */
+  .symptoms-form { background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:30px; }
+  .symptoms-list { display:grid; gap:15px; margin-bottom:25px; }
+  .symptom-item { display:flex; align-items:center; gap:10px; padding:12px 15px; border:1px solid #e0e0e0; border-radius:8px; transition:all 0.2s; cursor:pointer; }
+  .symptom-item:hover { border-color:#16a34a; background:#f0fff4; transform:translateY(-2px); }
+  .symptom-item input[type="checkbox"] { width:18px; height:18px; accent-color:#16a34a; cursor:pointer; }
+  .symptom-label { font-size:16px; cursor:pointer; }
+
+  .diagnose-btn { background:#16a34a; color:white; border:none; padding:14px; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; width:100%; transition:0.2s; }
+  .diagnose-btn:hover { background:#13803d; transform:translateY(-2px); }
+
+  /* ===== Hasil diagnosa ===== */
+  .result-section { background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.05); display:none; opacity:0; transform:translateY(10px); transition:all 0.3s; }
+  .result-section.show { display:block; opacity:1; transform:translateY(0); }
+
+  .result-title { color:#16a34a; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #e0e0e0; }
+  .selected-symptoms { margin-bottom:20px; }
+  .symptom-tag { display:inline-block; background:#e8f5e9; color:#2e7d32; padding:5px 10px; border-radius:20px; margin:5px; font-size:14px; }
+  .disease-name { font-size:20px; font-weight:600; color:#16a34a; margin-bottom:10px; }
+  .solution { background:#f0fff4; padding:15px; border-radius:8px; border-left:4px solid #16a34a; }
+
+  @media (max-width:600px){
+    .container{padding:15px;}
+    header{flex-direction:column; gap:15px; align-items:flex-start;}
+    .symptoms-form,.result-section{padding:20px;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-circle">C</div>
+      <div class="logo-text">Sistem Pakar Cabai</div>
+    </div>
+    <a href="index.html" class="back-btn">Kembali ke Beranda</a>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Diagnosa Penyakit Cabai dengan Cepat</h1>
+    <p>Pilih gejala yang Anda amati di tanaman cabai untuk mendapatkan diagnosa awal beserta solusinya.</p>
+  </section>
+
+  <!-- Form gejala -->
+  <form class="symptoms-form" id="diagnosisForm">
+    <div class="symptoms-list" id="symptomsList"></div>
+    <button type="submit" class="diagnose-btn">Diagnosa Sekarang</button>
+  </form>
+
+  <!-- Hasil diagnosa -->
+  <section class="result-section" id="resultSection">
+    <h2 class="result-title">Hasil Diagnosa</h2>
+    <div class="selected-symptoms" id="selectedSymptoms"></div>
+    <div class="disease-name" id="diseaseName"></div>
+    <div class="solution" id="solution"></div>
+  </section>
+</div>
+
+<script>
+const symptoms = [
+  { id:'G01', name:'Daun menguning' },
+  { id:'G02', name:'Daun menggulung' },
+  { id:'G03', name:'Buah busuk sebelum matang' },
+  { id:'G04', name:'Batang layu atau lembek' },
+  { id:'G05', name:'Bercak hitam pada daun' },
+  { id:'G06', name:'Serangan hama kecil (thrips/kutu)' },
+  { id:'G07', name:'Buah rontok sebelum matang' }
+];
+
+const diagnosisRules = [
+  { name:'Layu Fusarium', symptoms:['G01','G04'], solution:'Rotasi tanaman, penggunaan fungisida, dan perbaikan drainase tanah.' },
+  { name:'Antraknosa', symptoms:['G03','G05'], solution:'Fungisida, sanitasi buah yang terinfeksi, dan pengaturan kelembaban.' },
+  { name:'Serangan Hama (Thrips/Kutu)', symptoms:['G02','G06'], solution:'Insektisida, pengendalian hayati, dan pembersihan gulma.' },
+  { name:'Busuk Buah', symptoms:['G07','G03'], solution:'Pemangkasan bagian sakit, peningkatan drainase, dan pengaturan jarak tanam.' }
+];
+
+function renderSymptomsList(){
+  const list = document.getElementById('symptomsList');
+  list.innerHTML='';
+  symptoms.forEach(s=>{
+    const item=document.createElement('div'); item.className='symptom-item';
+    const checkbox=document.createElement('input'); checkbox.type='checkbox'; checkbox.id=s.id; checkbox.value=s.id;
+    const label=document.createElement('label'); label.htmlFor=s.id; label.className='symptom-label'; label.textContent=s.name;
+    item.appendChild(checkbox); item.appendChild(label);
+    list.appendChild(item);
+    // Klik div juga toggle checkbox
+    item.addEventListener('click', ()=>{ checkbox.checked=!checkbox.checked; });
+  });
+}
+
+function getSelectedSymptoms(){
+  return Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
+}
+
+function diagnoseDisease(selectedSymptoms){
+  for(const rule of diagnosisRules){
+    if(rule.symptoms.every(symptom=>selectedSymptoms.includes(symptom))){
+      return { disease: rule.name, solution: rule.solution };
+    }
+  }
+  return { disease:'Belum bisa menentukan penyakit', solution:'Silakan periksa gejala atau tambahkan observasi lain.' };
+}
+
+function displayDiagnosisResult(selectedSymptoms,result){
+  const resultSection=document.getElementById('resultSection');
+  const selContainer=document.getElementById('selectedSymptoms');
+  const diseaseName=document.getElementById('diseaseName');
+  const solution=document.getElementById('solution');
+
+  selContainer.innerHTML='';
+  selectedSymptoms.forEach(id=>{
+    const s=symptoms.find(x=>x.id===id);
+    if(s){ const span=document.createElement('span'); span.className='symptom-tag'; span.textContent=s.name; selContainer.appendChild(span); }
+  });
+
+  diseaseName.textContent=result.disease;
+  solution.textContent=result.solution;
+
+  resultSection.classList.add('show');
+  resultSection.scrollIntoView({ behavior:'smooth' });
+}
+
+document.getElementById('diagnosisForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const selected=getSelectedSymptoms();
+  if(selected.length===0){ alert('Silakan pilih minimal satu gejala.'); return; }
+  const result=diagnoseDisease(selected);
+  displayDiagnosisResult(selected,result);
+});
+
+document.addEventListener('DOMContentLoaded', renderSymptomsList);
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login / Registrasi — Sistem Pakar Cabai</title>
+  <style>
+    :root {
+      --bg:#ffffff; --text:#0a0a0a; --muted:#6b7280;
+      --primary:#16a34a; --primary-foreground:#ffffff; --border:#e5e7eb; --radius:0.75rem;
+    }
+    body {
+      margin:0; font-family:ui-sans-serif, system-ui;
+      background:#f8fafc; display:flex; justify-content:center; align-items:center; height:100vh;
+    }
+    .auth-container {
+      background:#fff; padding:2.5rem; border-radius:var(--radius);
+      box-shadow:0 10px 25px rgba(0,0,0,0.1); width:100%; max-width:420px;
+    }
+    h2 { color:var(--primary); text-align:center; margin-bottom:2rem; font-size:1.75rem; }
+    label { display:block; margin-bottom:0.5rem; font-weight:600; }
+    input { width:100%; padding:0.75rem; margin-bottom:1.25rem; border:1px solid var(--border); border-radius:var(--radius); font-size:1rem; }
+    button {
+      width:100%; padding:0.75rem; border:none; border-radius:var(--radius);
+      background:var(--primary); color:var(--primary-foreground); font-weight:600;
+      font-size:1rem; cursor:pointer; transition:0.2s;
+    }
+    button:hover { filter:brightness(0.95); }
+    p { text-align:center; color:var(--muted); margin-top:1.25rem; font-size:0.95rem; }
+    a { color:var(--primary); font-weight:600; text-decoration:none; cursor:pointer; }
+    .admin-link { display:block; margin-top:0.5rem; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <h2 id="authTitle">Login</h2>
+    <form id="authForm">
+      <label for="username">Email</label>
+      <input type="email" id="username" placeholder="email@example.com" required>
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••" required>
+      
+      <button type="submit">Login</button>
+    </form>
+
+    <p>
+      <span id="toggleText">Belum punya akun?</span> <a id="toggleAuth">Daftar di sini</a>
+    </p>
+
+    <p class="admin-link">
+    </p>
+  </div>
+
+  <script>
+    let authMode = 'login';
+    const toggleLink = document.getElementById('toggleAuth');
+    const authTitle = document.getElementById('authTitle');
+    const authForm = document.getElementById('authForm');
+    const toggleText = document.getElementById('toggleText');
+
+    toggleLink.addEventListener('click', () => {
+      authMode = authMode === 'login' ? 'register' : 'login';
+      authTitle.textContent = authMode === 'login' ? 'Login' : 'Registrasi';
+      authForm.reset();
+      authForm.querySelector('button').textContent = authMode === 'login' ? 'Login' : 'Daftar';
+      toggleText.textContent = authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?';
+      toggleLink.textContent = authMode === 'login' ? 'Daftar di sini' : 'Login di sini';
+    });
+
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if(authMode === 'login'){
+        // login user
+        try {
+          const res = await fetch('/api/user/login', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({email,password})
+          });
+          const data = await res.json();
+          if(res.ok){
+            alert('Login berhasil: ' + data.user.name);
+            window.location.href = 'dashboard.html';
+          } else {
+            alert(data.error);
+          }
+        } catch(err){
+          alert('Terjadi kesalahan server');
+        }
+      } else {
+        // register user
+        try {
+          const res = await fetch('/api/user/register', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({name:email,email,password})
+          });
+          const data = await res.json();
+          if(res.ok){
+            alert('Registrasi berhasil: ' + data.user.name);
+            // reset ke login
+            authMode='login'; authForm.reset();
+            authTitle.textContent='Login';
+            authForm.querySelector('button').textContent='Login';
+            toggleText.textContent='Belum punya akun?';
+            toggleLink.textContent='Daftar di sini';
+          } else {
+            alert(data.error);
+          }
+        } catch(err){
+          alert('Terjadi kesalahan server');
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
