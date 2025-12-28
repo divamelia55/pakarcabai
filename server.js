@@ -1,28 +1,92 @@
+// server.js (root folder CABAI)
+
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
+const path = require('path');
+
+const db = require('./backend/db');
+const apiRouter = require('./backend/api');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
+// ----------------------
 // Middleware
+// ----------------------
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Supaya form POST bisa terbaca
 
-// Serve static files dari folder public
-app.use(express.static(path.join(__dirname, 'public')));
+// ----------------------
+// AUTH LOGIN ADMIN
+// ----------------------
+app.post('/api/auth/login', async (req, res) => {
+    const { username, password } = req.body;
 
-// API Router
-const apiRouter = require('./src/api'); // path sudah disesuaikan karena api.js ada langsung di src/
-app.use('/api', apiRouter);
+    if (!username || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'Username dan password wajib diisi'
+        });
+    }
 
-// Fallback: jika route tidak ditemukan, redirect ke index.html (opsional)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    try {
+        const [rows] = await db.pool.query(
+            'SELECT * FROM admins WHERE username = ?',
+            [username]
+        );
+
+        if (rows.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: 'Username atau password salah'
+            });
+        }
+
+        const admin = rows[0];
+
+        // (Plain text – sesuai tugas kuliah)
+        if (password !== admin.password) {
+            return res.status(401).json({
+                success: false,
+                message: 'Username atau password salah'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Login berhasil',
+            admin: {
+                id: admin.id,
+                username: admin.username
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
 });
 
-// Jalankan server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+// ----------------------
+// API lama
+// ----------------------
+app.use('/api', apiRouter);
+
+// ----------------------
+// Frontend static
+// ----------------------
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// ----------------------
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/index.html'));
+});
+
+// ----------------------
+app.listen(port, () => {
+    console.log(`Server berjalan di http://localhost:${port}`);
+    console.log('✅ KONEKSI DATABASE BERHASIL!');
 });

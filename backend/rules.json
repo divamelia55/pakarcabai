@@ -1,0 +1,51 @@
+{
+  "symptomsData": {
+    "G01": "Daun mengalami kelayuan",
+    "G02": "Daun menguning dan menjalar ke ranting",
+    "G03": "Warna jaringan akar dan batang menjadi coklat",
+    "G04": "Layu secara tiba-tiba",
+    "G05": "Semua daun layu tetapi tidak berubah warna",
+    "G06": "Jaringan veskuler dari batang bagian bawah akar coklat",
+    "G07": "Munculnya bercak pada buah yang agak mengkilap",
+    "G08": "Seluruh buah keriput dan mengering",
+    "G09": "Warna kulit buah seperti jerami padi",
+    "G10": "Pucuk daun berubah menjadi kuning jelas",
+    "G11": "Tulang daun menebal dan daun menggulung ke atas",
+    "G12": "Tanaman kerdil dan tidak berbuah",
+    "G13": "Muncul bercak bulat berwarna coklat pada daun dan kering",
+    "G14": "Bercak berwarna pucat putih dengan warna tepi lebih tua",
+    "G15": "Terdapat lubang pada bercak tua"
+  },
+  "diseasesData": {
+    "P01": {
+      "name": "Layu Fusarium (Fusarium Oxysporum. Sp)",
+      "symptoms": ["G01", "G02", "G03"],
+      "description": "Penyakit ini disebabkan oleh jamur...",
+      "solution": "Gunakan fungisida berbahan aktif benomil..."
+    },
+    "P02": {
+      "name": "Penyakit Layu Bakteri Ralstonia (Ralstonia solanacearum)",
+      "symptoms": ["G04", "G05", "G06"],
+      "description": "Disebabkan oleh bakteri, layu ini biasanya terjadi sangat cepat...",
+      "solution": "Cabut dan bakar tanaman yang sakit..."
+    },
+    "P03": {
+      "name": "Penyakit Busuk Buah Antraknosa (Collectrotichum gloeospoiroides)",
+      "symptoms": ["G07", "G08", "G09"],
+      "description": "Dikenal sebagai penyakit patek, menyerang buah cabai...",
+      "solution": "Lakukan sanitasi kebun..."
+    },
+    "P04": {
+      "name": "Penyakit Virus kuning (Gemini Virus)",
+      "symptoms": ["G10", "G11", "G12"],
+      "description": "Disebabkan oleh virus yang ditularkan oleh kutu kebul...",
+      "solution": "Tidak ada obat untuk virus..."
+    },
+    "P05": {
+      "name": "Penyakit bercak daun (Cercospora sp.)",
+      "symptoms": ["G13", "G14", "G15"],
+      "description": "Penyakit yang umum pada musim hujan...",
+      "solution": "Gunakan fungisida kontak atau sistemik..."
+    }
+  }
+}
