@@ -63,7 +63,17 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // ======================
-// API ROUTES
+// API HEALTH CHECK (PENTING)
+// ======================
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API Pakar Cabai berjalan dengan baik'
+  });
+});
+
+// ======================
+// API ROUTES LAIN
 // ======================
 app.use('/api', apiRouter);
 
@@ -74,7 +84,7 @@ const frontendPath = path.join(__dirname, 'frontend');
 app.use(express.static(frontendPath));
 
 // ======================
-// ROOT ROUTE (WAJIB ADA)
+// ROOT ROUTE
 // ======================
 app.get('/', (req, res) => {
   res.send('✅ Server Pakar Cabai berjalan di Vercel');
