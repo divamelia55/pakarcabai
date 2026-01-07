@@ -9,7 +9,7 @@ const db = require('./backend/db');
 
 const app = express();
 
-// PORT untuk lokal / hosting
+// PORT (Vercel / Lokal)
 const port = process.env.PORT || 3000;
 
 // ======================
@@ -68,23 +68,28 @@ app.post('/api/auth/login', async (req, res) => {
 app.use('/api', apiRouter);
 
 // ======================
-// FRONTEND STATIC
+// FRONTEND (OPTIONAL)
 // ======================
-app.use(express.static(path.join(__dirname, 'frontend')));
+const frontendPath = path.join(__dirname, 'frontend');
+app.use(express.static(frontendPath));
 
+// ======================
+// ROOT ROUTE (WAJIB ADA)
+// ======================
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+  res.send('✅ Server Pakar Cabai berjalan di Vercel');
 });
 
 // ======================
-// START SERVER
+// START SERVER (LOCAL ONLY)
 // ======================
-// ⚠️ LISTEN HANYA UNTUK LOCAL
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
   });
 }
 
-// ⚠️ WAJIB untuk Vercel
+// ======================
+// EXPORT FOR VERCEL
+// ======================
 module.exports = app;
