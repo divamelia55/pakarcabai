@@ -20,7 +20,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ======================
-// 2. API Routes (Dahulukan API)
+// 2. Akses Folder Frontend (Statik)
+// ======================
+// Baris ini harus di atas agar file CSS/JS bisa langsung terbaca
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// ======================
+// 3. API Routes
 // ======================
 
 // API Health Check
@@ -58,38 +64,33 @@ app.post('/api/auth/login', async (req, res) => {
 app.use('/api', apiRouter);
 
 // ======================
-// 3. Akses Folder Frontend & Routing
+// 4. Routing Halaman (Frontend)
 // ======================
 
-// Baca file statis (CSS, JS, Gambar) dari folder frontend
-app.use(express.static(path.join(__dirname, 'frontend')));
-
-// Handle rute spesifik (seperti /admin_login) agar mencari file .html nya
+// Handle halaman spesifik tanpa .html (misal: /admin_login)
 app.get('/:page', (req, res, next) => {
   const page = req.params.page;
-  // Jika akses root atau API, abaikan fungsi ini
-  if (!page || page.startsWith('api')) return next();
+  if (page.startsWith('api')) return next();
 
   const filePath = path.join(__dirname, 'frontend', `${page}.html`);
   res.sendFile(filePath, (err) => {
     if (err) {
-      next(); // Jika file .html tidak ada, lanjut ke handler berikutnya
+      next(); // Jika file tidak ada, lanjut ke route '*'
     }
   });
 });
 
-// Halaman Utama (index.html)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
-
-// Fallback: Jika rute tidak dikenal, balikkan ke index.html
+// ROUTE UTAMA: Mengarahkan semua akses sisa ke index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'), (err) => {
+    if (err) {
+      res.status(404).send("Folder 'frontend' atau file 'index.html' tidak ditemukan.");
+    }
+  });
 });
 
 // ======================
-// 4. Jalankan Server (Local Only)
+// 5. Jalankan Server (Local Only)
 // ======================
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
