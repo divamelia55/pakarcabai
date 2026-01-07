@@ -22,8 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 // ======================
 // 2. Akses Folder Frontend (Statik)
 // ======================
-// Baris ini harus di atas agar file CSS/JS bisa langsung terbaca
-app.use(express.static(path.join(__dirname, 'frontend')));
+// Menggunakan process.cwd() agar Vercel mencari folder di root project
+const frontendPath = path.join(process.cwd(), 'frontend');
+app.use(express.static(frontendPath));
 
 // ======================
 // 3. API Routes
@@ -70,21 +71,29 @@ app.use('/api', apiRouter);
 // Handle halaman spesifik tanpa .html (misal: /admin_login)
 app.get('/:page', (req, res, next) => {
   const page = req.params.page;
-  if (page.startsWith('api')) return next();
+  if (page.startsWith('api') || page.includes('.')) return next();
 
-  const filePath = path.join(__dirname, 'frontend', `${page}.html`);
+  const filePath = path.join(frontendPath, `${page}.html`);
   res.sendFile(filePath, (err) => {
-    if (err) {
-      next(); // Jika file tidak ada, lanjut ke route '*'
-    }
+    if (err) next();
   });
 });
 
-// ROUTE UTAMA: Mengarahkan semua akses sisa ke index.html
+// ROUTE UTAMA: Catch-all untuk index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'), (err) => {
+  const indexPath = path.join(frontendPath, 'index.html');
+  
+  res.sendFile(indexPath, (err) => {
     if (err) {
-      res.status(404).send("Folder 'frontend' atau file 'index.html' tidak ditemukan.");
+      console.error("Gagal menemukan file di path:", indexPath);
+      res.status(404).send(`
+        <div style="text-align:center; padding-top:50px; font-family:sans-serif;">
+          <h2>⚠️ Folder 'frontend' Tidak Terdeteksi</h2>
+          <p>Server mencari di: <b>${indexPath}</b></p>
+          <hr style="width:50%">
+          <p>Solusi: Pastikan nama folder di GitHub adalah <b>frontend</b> (kecil semua) dan berisi <b>index.html</b></p>
+        </div>
+      `);
     }
   });
 });
