@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sistem Pakar Cabai — Diagnosa Cepat & Akurat</title>
+    
+    <meta name="description" content="PakarCabai.AI - Solusi digital diagnosa penyakit tanaman cabai berdasarkan gejala lapangan dengan saran penanganan pakar.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        'chili': {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0',
+                            500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #f1f5f9; }
+        .green-gradient-bg { background: radial-gradient(circle at top right, #14532d 0%, #0f172a 70%); }
+        .glass-card { background: #1e293b; border: 1px solid #334155; transition: all 0.3s ease; }
+        .glass-card:hover { border-color: #22c55e; box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); transform: translateY(-5px); }
+        .glow-text { text-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+        #detailView { animation: fadeInUp 0.5s ease; display: none; scroll-margin-top: 100px; background: #1e293b; border: 2px solid #22c55e; box-shadow: 0 0 30px rgba(34, 197, 94, 0.2); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+
+<body class="font-sans antialiased">
+
+    <nav class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between"> 
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-chili-600 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]"> 
+                    <i class="fa-solid fa-leaf text-base"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-tighter text-white uppercase">Pakar<span class="text-chili-500">Cabai</span></span>
+                    <p class="text-[9px] font-bold text-chili-500 uppercase tracking-widest leading-none">Smart Farming System</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="admin_login.html" class="hidden md:block text-xs font-bold text-slate-400 hover:text-white transition">Admin Login</a>
+                <a href="rules.html" class="bg-chili-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-chili-500 transition shadow-lg shadow-chili-600/20">Mulai Diagnosa</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="green-gradient-bg border-b border-slate-800 overflow-hidden">
+            <div class="max-w-6xl mx-auto px-6 py-12 lg:py-20 grid lg:grid-cols-2 gap-8 items-center"> 
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-chili-500/10 border border-chili-500/30 text-chili-400 text-xs font-bold mb-6"> 
+                        <span class="w-2 h-2 rounded-full bg-chili-500 animate-pulse"></span> Selamat Datang Petani Cerdas
+                    </div>
+                    <h1 class="text-4xl lg:text-6xl font-black text-white mb-6 leading-tight tracking-tight"> 
+                        Deteksi Penyakit <br><span class="text-chili-500 glow-text underline decoration-chili-500/20 decoration-8 underline-offset-4">Tanaman Cabai</span>
+                    </h1>
+                    <p class="text-base text-slate-400 mb-8 leading-relaxed max-w-lg">
+                       Jangan biarkan hasil panen Anda terancam. PakarCabai hadir untuk membantu Anda mengenali masalah pada tanaman cabai dengan lebih mudah.
+                    </p>
+                    <a href="rules.html" class="inline-flex items-center justify-center gap-3 bg-chili-600 text-white px-8 py-4 rounded-2xl font-black text-base hover:bg-chili-500 transition-all shadow-xl shadow-chili-600/30">
+                        Mulai Diagnosa Sekarang <i class="fa-solid fa-magnifying-glass-chart text-sm"></i>
+                    </a>
+                </div>
+                <div class="relative group">
+                    <img src="bg.jpg" class="relative rounded-[2rem] shadow-2xl border-4 border-slate-700 object-cover h-[350px] w-full"> 
+                </div>
+            </div>
+        </section>
+
+      <section class="py-10 px-3 bg-slate-900/50">
+    <div class="max-w-6xl mx-auto p-6 md:p-8 rounded-[2rem] bg-slate-800/50 border border-slate-700 shadow-sm">
+        <div class="text-center mb-6">
+
+                    <h2 class="text-3xl font-black text-white mb-2">Bagaimana Sistem Bekerja?</h2>
+                    <p class="text-sm text-slate-400 max-w-xl mx-auto">Sistem ini dirancang dengan alur diagnosis yang sederhana agar Anda dapat fokus pada penanganan tanaman, tanpa perlu memahami proses sistem yang rumit.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8"> 
+                    <div class="p-8 rounded-[2rem] glass-card text-center"> 
+                        <div class="w-14 h-14 bg-chili-500/10 text-chili-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6"><i class="fa-solid fa-list-check"></i></div>
+                        <h3 class="font-bold text-lg mb-2 text-white">1. Amati & Pilih Gejala</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Amati kondisi fisik tanaman cabai Anda.
+Pilih gejala yang terlihat pada tanaman sesuai dengan daftar yang tersedia.</p>
+                    </div>
+                    <div class="p-8 rounded-[2rem] glass-card text-center">
+                        <div class="w-14 h-14 bg-chili-500/10 text-chili-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6"><i class="fa-solid fa-microchip"></i></div>
+                        <h3 class="font-bold text-lg mb-2 text-white">2. Proses Diagnosis</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Sistem akan menganalisis gejala yang Anda pilih dengan mencocokkannya pada basis pengetahuan penyakit tanaman cabai yang telah ditentukan oleh pakar.</p>
+                    </div>
+                    <div class="p-8 rounded-[2rem] glass-card text-center">
+                        <div class="w-14 h-14 bg-chili-500/10 text-chili-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6"><i class="fa-solid fa-file-medical"></i></div>
+                        <h3 class="font-bold text-lg mb-2 text-white">3. Rekomendasi Tindakan</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Setelah proses diagnosis selesai, sistem akan menampilkan hasil berupa jenis penyakit beserta saran penanganan yang dapat dilakukan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+     <section class="max-w-6xl mx-auto px-6 py-10">
+    <div class="text-center mb-6">
+
+                <h2 class="text-3xl font-black text-white mb-2">Daftar Penyakit Tanaman Cabai</h2>
+                <p class="text-sm text-slate-400 max-w-2xl mx-auto">Berikut adalah daftar penyakit yang umum menyerang tanaman cabai. Klik pada salah satu nama penyakit untuk melihat informasi lengkap mengenai gejala, penyebab, dan cara penanganannya.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10"> 
+                <button onclick="showDisease('P01')" class="glass-card p-6 rounded-[2rem] group text-center">
+                    <div class="w-12 h-12 bg-slate-800 text-chili-500 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:bg-chili-600 group-hover:text-white transition-all"><i class="fa-solid fa-wind"></i></div>
+                    <h4 class="text-white font-bold text-[11px] mb-1">Layu Fusarium</h4>
+                </button>
+                <button onclick="showDisease('P02')" class="glass-card p-6 rounded-[2rem] group text-center">
+                    <div class="w-12 h-12 bg-slate-800 text-chili-500 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:bg-chili-600 group-hover:text-white transition-all"><i class="fa-solid fa-bacteria"></i></div>
+                    <h4 class="text-white font-bold text-[11px] mb-1">Layu Bakteri</h4>
+                </button>
+                <button onclick="showDisease('P03')" class="glass-card p-6 rounded-[2rem] group text-center">
+                    <div class="w-12 h-12 bg-slate-800 text-chili-500 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:bg-chili-600 group-hover:text-white transition-all"><i class="fa-solid fa-circle-dot"></i></div>
+                    <h4 class="text-white font-bold text-[11px] mb-1">Antraknosa</h4>
+                </button>
+                <button onclick="showDisease('P04')" class="glass-card p-6 rounded-[2rem] group text-center">
+                    <div class="w-12 h-12 bg-slate-800 text-chili-500 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:bg-chili-600 group-hover:text-white transition-all"><i class="fa-solid fa-virus"></i></div>
+                    <h4 class="text-white font-bold text-[11px] mb-1">Virus Kuning</h4>
+                </button>
+                <button onclick="showDisease('P05')" class="glass-card p-6 rounded-[2rem] group text-center">
+                    <div class="w-12 h-12 bg-slate-800 text-chili-500 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:bg-chili-600 group-hover:text-white transition-all"><i class="fa-solid fa-leaf"></i></div>
+                    <h4 class="text-white font-bold text-[11px] mb-1">Bercak Daun</h4>
+                </button>
+            </div>
+
+            <div id="detailView" class="rounded-[2.5rem] p-8 md:p-10 relative mb-12">
+                <button onclick="closeDetail()" class="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                    <i class="fa-solid fa-circle-xmark text-3xl"></i>
+                </button>
+                <div class="grid lg:grid-cols-2 gap-10 items-center">
+                    <div>
+                        <h2 id="dName" class="text-4xl font-black text-white glow-text mb-4"></h2>
+                        <div class="space-y-4">
+                            <div>
+                                <span class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Identifikasi Penyebab</span>
+                                <p id="dCause" class="mt-2 text-slate-200 font-bold text-sm"></p>
+                            </div>
+                            <div>
+                                <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Gejala yang Perlu Diwaspadai</span>
+                                <ul id="dRules" class="mt-3 space-y-2 text-slate-400 text-xs border-l-2 border-slate-700 pl-4"></ul>
+                            </div>
+                            <div class="bg-chili-500/10 p-5 rounded-2xl border-l-4 border-chili-500">
+                                <span class="text-chili-500 text-[10px] font-black uppercase">Saran Tindakan Pakar</span>
+                                <p id="dSol" class="mt-2 text-slate-300 text-xs leading-relaxed font-medium"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-3xl overflow-hidden shadow-2xl h-64 bg-slate-800 border border-slate-700"> 
+                        <img id="dImg" src="" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-6xl mx-auto px-6 pb-20">
+            <div class="bg-chili-900 rounded-[3rem] p-10 text-center relative overflow-hidden shadow-2xl shadow-chili-900/40"> 
+                <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none"><i class="fa-solid fa-microchip text-[12rem] text-white"></i></div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white mb-4">Siap Mengamankan Kebun Anda?</h2>
+                    <p class="text-chili-200 mb-8 max-w-2xl mx-auto text-base opacity-80">Makin cepat penyakit terdeteksi, makin besar peluang panen Anda selamat. Gunakan sistem pakar kami sekarang gratis.</p>
+                    <a href="rules.html" class="inline-flex items-center gap-4 bg-white text-chili-900 px-10 py-5 rounded-2xl font-black text-lg hover:bg-slate-100 transition-all hover:scale-105">
+                        Mulai Konsultasi Gratis <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4 border-t border-slate-800 bg-slate-900/50 text-center">
+        <div class="flex items-center justify-center gap-1 mb-1 opacity-50">
+            <i class="fa-solid fa-leaf text-chili-500 text-[10px]"></i>
+            <span class="font-black text-white tracking-tighter uppercase text-xs">PakarCabai</span>
+        </div>
+        <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.4em]">Sistem Pakar Diagnosa Cabai &copy; 2025</p>
+    </footer>
+
+    <script>
+      const dbPenyakit = {
+    'P01': { 
+        name: "Layu Fusarium", 
+        cause: "Jamur Fusarium oxysporum sp.", 
+        img: "images/layu_fusarium.jpg", 
+        rules: [
+            "Tanaman terlihat layu meskipun tanah masih basah",
+            "Daun bagian bawah mulai menguning",
+            "Batang bagian dalam berwarna coklat",
+            "Aliran air dan nutrisi ke daun terganggu"
+        ], 
+        sol: "Tanaman yang parah sebaiknya dicabut dan dibuang. Jangan menanam cabai terus-menerus di lahan yang sama dan pastikan drainase baik. Gunakan fungisida sesuai petunjuk atau anjuran penyuluh." 
+    },
+    'P02': { 
+        name: "Layu Bakteri", 
+        cause: "Bakteri Ralstonia solanacearum", 
+        img: "images/layu_bakteri.jpg", 
+        rules: [
+            "Tanaman layu secara tiba-tiba meskipun daun hijau",
+            "Tanah terlalu basah memicu penyebaran cepat",
+            "Lendir putih keluar saat batang dipotong",
+            "Pertumbuhan tanaman terhambat"
+        ], 
+        sol: "Segera cabut dan buang tanaman yang sakit. Gunakan bibit sehat dan pastikan drainase baik. Hindari menanam cabai terus-menerus di lahan yang sama." 
+    },
+    'P03': { 
+        name: "Busuk Buah (Patek)", 
+        cause: "Jamur Colletotrichum gloeosporioides", 
+        img: "images/antraknosa.jpg", 
+        rules: [
+            "Bercak basah muncul pada buah",
+            "Buah membusuk atau mengering",
+            "Gejala lebih jelas saat musim hujan atau lembap",
+            "Buah tidak layak panen"
+        ], 
+        sol: "Buah yang terserang segera dipetik dan dibuang. Jaga kebersihan kebun, atur jarak tanam, dan gunakan fungisida sesuai petunjuk atau anjuran penyuluh." 
+    },
+    'P04': { 
+        name: "Virus Kuning", 
+        cause: "Virus Geminivirus yang dibawa kutu kebul", 
+        img: "images/virus_kuning.jpg", 
+        rules: [
+            "Daun menguning dan menggulung",
+            "Pertumbuhan tanaman terhambat",
+            "Serangan dibawa oleh serangga kecil (kutu kebul)",
+            "Tidak dapat disembuhkan, menurunkan hasil panen"
+        ], 
+        sol: "Tanaman yang terinfeksi dicabut dan dibuang. Kendalikan kutu kebul secara rutin, gunakan bibit tahan penyakit, dan mulsa plastik dapat membantu mengurangi serangan hama." 
+    },
+    'P05': { 
+        name: "Bercak Daun", 
+        cause: "Jamur Cercospora sp.", 
+        img: "images/bercak_cabai.jpg", 
+        rules: [
+            "Bercak coklat kecil muncul di daun",
+            "Daun mengering dan akhirnya gugur",
+            "Penyakit menyerang terutama di kebun lembap",
+            "Bercak dapat melebar jika tidak ditangani"
+        ], 
+        sol: "Daun yang sakit dipotong dan dibuang. Jaga kebun tetap bersih, hindari penyiraman berlebihan, dan semprot fungisida sesuai petunjuk atau anjuran penyuluh." 
+    }
+};
+
+
+        function showDisease(id) {
+            const d = dbPenyakit[id];
+            if (!d) return;
+            document.getElementById('dName').innerText = d.name;
+            document.getElementById('dCause').innerText = d.cause;
+            document.getElementById('dImg').src = d.img;
+            document.getElementById('dSol').innerText = d.sol;
+            document.getElementById('dRules').innerHTML = d.rules.map(r => `<li class="flex items-start"><i class="fa-solid fa-check text-chili-500 mt-1 mr-2 text-[10px]"></i><span>${r}</span></li>`).join('');
+            const dv = document.getElementById('detailView');
+            dv.style.display = 'block';
+            setTimeout(() => { dv.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+        }
+        function closeDetail() { document.getElementById('detailView').style.display = 'none'; }
+    </script>
+</body>
+</html>

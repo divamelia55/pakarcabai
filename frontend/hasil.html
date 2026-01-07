@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Analisis Diagnosis — PakarCabai.AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        'chili': {
+                            50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e',
+                            600: '#16a34a', 700: '#15803d', 900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0f172a; color: #f1f5f9; } 
+        
+        .glow-container {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 2.5rem;
+            border: 2px solid #22c55e;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .glow-premium {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 3rem;
+            border: 4px solid #22c55e;
+            box-shadow: 0 0 35px rgba(34, 197, 94, 0.6);
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .img-box { aspect-ratio: 4/3; width: 100%; border-radius: 1.5rem; overflow: hidden; background: #f8fafc; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.6s ease-out forwards; }
+
+        /* Style Tersembunyi Khusus untuk Struktur PDF Resmi */
+        #pdf-template { display: none; }
+    </style>
+</head>
+
+<body class="font-sans antialiased">
+
+    <nav class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-lg border-b border-slate-800 no-print">
+        <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between"> 
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-chili-500 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.6)]"> 
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white uppercase">Pakar<span class="text-chili-500">Cabai</span></span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="downloadFormalPDF()" class="bg-chili-600 text-white px-5 py-2.5 rounded-full text-xs font-bold hover:bg-chili-500 transition shadow-[0_0_15px_rgba(34,197,94,0.3)] flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf"></i> UNDUH PDF
+                </button>
+                <a href="index.html" class="bg-white/10 text-white px-5 py-2.5 rounded-full text-xs font-bold hover:bg-white/20 transition border border-white/10">Selesai</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="report-area" class="max-w-5xl mx-auto pt-16 px-6 pb-24">
+        <div class="mb-12 animate-in text-center">
+            <span class="bg-chili-500/10 text-chili-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block border border-chili-500/30">Laporan Hasil Diagnosis</span>
+            <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">Hasil Diagnosis <span class="text-chili-500">Tanaman Cabai</span></h1>
+            <p id="current-date" class="text-sm text-slate-500 font-medium"></p>
+        </div>
+
+        <div id="resultsContainer" class="space-y-16"></div>
+
+        <div class="mt-20 text-center animate-in" style="animation-delay: 0.3s;">
+            <a href="rules.html" class="inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-5 rounded-3xl transition-all group">
+                <div class="w-8 h-8 bg-chili-500 rounded-full flex items-center justify-center text-white group-hover:rotate-180 transition-transform duration-500">
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Butuh analisis lain?</p>
+                    <p class="text-lg font-extrabold tracking-tight">Diagnosa Ulang Sekarang</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <div id="pdf-template" style="font-family: Arial, sans-serif; color: black; padding: 40px; background: white;">
+        <div style="text-align: center; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="font-size: 24px; margin: 0; text-transform: uppercase;">Laporan Diagnosis Tanaman Cabai</h1>
+            <p style="font-size: 12px; margin: 5px 0;">Generated by PakarCabai.AI Digital Intelligence System</p>
+            <p id="pdf-date" style="font-size: 10px; font-weight: bold;"></p>
+        </div>
+        <div id="pdf-content"></div>
+        <div style="margin-top: 50px; border-top: 1px solid #ccc; padding-top: 10px; text-align: center; font-size: 9px; font-style: italic;">
+            Dokumen ini merupakan hasil analisis sistem pakar berbasis data gejala visual.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const dateStr = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById("current-date").innerText = dateStr;
+            document.getElementById("pdf-date").innerText = "Tanggal Laporan: " + dateStr;
+
+            const resultData = JSON.parse(localStorage.getItem("diagnosisResult"));
+            if (resultData && resultData.diagnoses) {
+                renderResults(resultData.diagnoses);
+                preparePDFContent(resultData.diagnoses);
+            }
+        });
+
+        // Tampilan di Web (Tetap Modern)
+        function renderResults(diagnoses) {
+            const container = document.getElementById("resultsContainer");
+            container.innerHTML = ""; 
+            diagnoses.forEach((diag, index) => {
+                const percent = (diag.confidence * 100).toFixed(1);
+                const isTop = index === 0;
+                const nameInDb = diag.name.toLowerCase();
+                let fileName = "default";
+                if (nameInDb.includes("fusarium")) fileName = "layu_fusarium";
+                else if (nameInDb.includes("bakteri")) fileName = "layu_bakteri";
+                else if (nameInDb.includes("antraknosa")) fileName = "antraknosa";
+                else if (nameInDb.includes("kuning")) fileName = "virus_kuning";
+                else if (nameInDb.includes("bercak")) fileName = "bercak_cabai";
+
+                container.innerHTML += `
+                    <div class="${isTop ? 'glow-premium' : 'glow-container'} p-8 md:p-12 animate-in relative overflow-hidden mb-10">
+                        ${isTop ? `<div class="absolute top-0 right-0 bg-chili-600 text-white px-8 py-2 rounded-bl-3xl font-black text-[10px] uppercase tracking-widest shadow-lg">Akurasi Tertinggi</div>` : ''}
+                        <div class="grid lg:grid-cols-2 gap-12 items-start">
+                            <div class="space-y-6">
+                                <div class="img-box border-2 border-slate-100 shadow-md">
+                                    <img src="images/${fileName}.jpg" class="w-full h-full object-cover" onerror="this.src='images/default.jpg';">
+                                </div>
+                                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex items-center justify-between text-slate-900">
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tingkat Akurasi</p>
+                                        <p class="text-5xl font-black text-chili-600 tracking-tighter">${percent}%</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[10px] font-bold text-chili-700 bg-chili-100 px-3 py-1 rounded-md uppercase tracking-tighter">ID: ${diag.code}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-8">
+                                <div>
+                                    <h2 class="text-3xl font-extrabold text-slate-900 leading-tight mb-3">${diag.name}</h2>
+                                    <div class="h-1.5 w-20 bg-chili-500 rounded-full shadow-[0_0_10px_#22c55e] mb-6"></div>
+                                    <p class="text-[13px] text-slate-600 leading-relaxed font-medium bg-slate-50 p-4 rounded-xl border border-slate-100 italic">"${diag.description}"</p>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        ${diag.matchedSymptoms.map(s => `<span class="px-3 py-1.5 bg-chili-50 text-chili-700 text-[11px] font-bold rounded-lg border border-chili-100">✓ ${s}</span>`).join('')}
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl shadow-chili-500/20">
+                                    <h4 class="text-[10px] font-black text-chili-400 uppercase tracking-widest mb-3">Solusi Penanganan:</h4>
+                                    <p class="text-xs text-chili-5 leading-relaxed font-medium">${diag.solution}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Tampilan di PDF (Surat Resmi)
+        function preparePDFContent(diagnoses) {
+            const pdfContainer = document.getElementById("pdf-content");
+            pdfContainer.innerHTML = "";
+            diagnoses.forEach((diag, index) => {
+                const percent = (diag.confidence * 100).toFixed(1);
+                pdfContainer.innerHTML += `
+                    <div style="margin-bottom: 40px; page-break-inside: avoid;">
+                        <h2 style="background: #f2f2f2; padding: 10px; font-size: 16px; border-left: 5px solid #16a34a;">DIAGNOSIS #${index+1}: ${diag.name.toUpperCase()}</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <tr><td style="border: 1px solid black; padding: 8px; font-weight: bold; width: 30%;">Kode Penyakit</td><td style="border: 1px solid black; padding: 8px;">${diag.code}</td></tr>
+                            <tr><td style="border: 1px solid black; padding: 8px; font-weight: bold;">Tingkat Keyakinan</td><td style="border: 1px solid black; padding: 8px; font-weight: bold; color: #16a34a;">${percent}%</td></tr>
+                            <tr><td style="border: 1px solid black; padding: 8px; font-weight: bold;">Analisis Klinis</td><td style="border: 1px solid black; padding: 8px; font-size: 11px;">${diag.description}</td></tr>
+                            <tr><td style="border: 1px solid black; padding: 8px; font-weight: bold;">Gejala Terdeteksi</td><td style="border: 1px solid black; padding: 8px; font-size: 11px;">${diag.matchedSymptoms.join(", ")}</td></tr>
+                            <tr><td style="border: 1px solid black; padding: 8px; font-weight: bold; background: #f9f9f9;">Rekomendasi Penanganan</td><td style="border: 1px solid black; padding: 8px; font-size: 11px; font-weight: bold;">${diag.solution}</td></tr>
+                        </table>
+                    </div>
+                `;
+            });
+        }
+
+        function downloadFormalPDF() {
+            const element = document.getElementById('pdf-template');
+            element.style.display = "block"; 
+            const options = {
+                margin: 10,
+                filename: 'Laporan_Resmi_PakarCabai.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(element).save().then(() => {
+                element.style.display = "none"; 
+            });
+        }
+    </script>
+</body>
+</html>

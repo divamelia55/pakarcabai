@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin Cabai</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        primary: '#16A34A',
+                        primaryDark: '#14532d'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Mengubah warna latar belakang seluruh halaman */
+        body { background-color: #0f172a; color: #f1f5f9; }
+        
+        /* Styling khusus input agar tidak putih terang di dark mode */
+        input { 
+            background-color: #1e293b !important; 
+            border-color: #334155 !important; 
+            color: #f1f5f9 !important; 
+        }
+        
+        input:focus { 
+            border-color: #16A34A !important; 
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2);
+        }
+
+        /* Styling card agar efek kaca (glassmorphism) gelap */
+        .dark-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+<div class="dark-card p-8 rounded-2xl shadow-2xl w-full max-w-[360px]">
+    <div class="mb-6 text-center">
+        <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center text-xl mx-auto mb-3 shadow-lg shadow-green-900/20">
+            <i class="fa-solid fa-leaf"></i>
+        </div>
+        
+        <h1 class="text-xl font-extrabold text-white tracking-tight">Login Admin</h1>
+        <p class="text-xs text-gray-400 font-semibold mt-1 uppercase tracking-[0.15em]">Sistem Pakar Cabai</p>
+    </div>
+
+    <form id="loginForm" class="space-y-4">
+        <div>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                    <i class="fa fa-user text-xs"></i>
+                </span>
+                <input id="username" type="text" placeholder="Username"
+                    class="w-full border-2 pl-10 pr-4 py-3 rounded-xl text-sm transition-all font-medium" required>
+            </div>
+        </div>
+
+        <div>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+                    <i class="fa fa-lock text-xs"></i>
+                </span>
+                <input id="password" type="password" placeholder="Password"
+                    class="w-full border-2 pl-10 pr-4 py-3 rounded-xl text-sm transition-all font-medium" required>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-green-500 text-white font-bold py-3 rounded-xl transition-all text-sm shadow-lg shadow-green-900/20 active:scale-95">
+            Login ke Panel
+        </button>
+    </form>
+
+    <div id="errorMsg" class="hidden mt-4 p-3 rounded-lg bg-red-900/20 text-red-400 text-xs font-bold border border-red-800 flex items-center gap-2">
+        <i class="fa fa-circle-exclamation"></i>
+        <span></span>
+    </div>
+
+    <div class="mt-8 text-center border-t border-gray-700 pt-5">
+        <a href="index.html" class="text-[11px] font-extrabold text-gray-500 hover:text-primary transition-colors flex items-center justify-center gap-2">
+            <i class="fa fa-arrow-left"></i> KEMBALI KE BERANDA
+        </a>
+    </div>
+</div>
+
+<script>
+// Logika asli Anda tetap terjaga 100%
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const errorSpan = errorMsg.querySelector('span');
+
+    errorMsg.classList.add('hidden');
+
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            errorSpan.textContent = result.message;
+            errorMsg.classList.remove('hidden');
+            return;
+        }
+
+        localStorage.setItem('admin', JSON.stringify(result.admin));
+        window.location.href = 'admin.html';
+
+    } catch (err) {
+        errorSpan.textContent = 'Tidak bisa konek ke server';
+        errorMsg.classList.remove('hidden');
+    }
+});
+</script>
+
+</body>
+</html>
