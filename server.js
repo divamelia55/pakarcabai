@@ -1,3 +1,6 @@
+require('dotenv').config(); 
+// Baris di atas WAJIB ada di paling atas supaya db.js bisa baca MYSQL_PUBLIC_URL
+
 // server.js (ROOT FOLDER)
 
 const express = require('express');

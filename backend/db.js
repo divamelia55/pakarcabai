@@ -1,73 +1,74 @@
 // backend/db.js
-
 const mysql = require('mysql2/promise');
 
 // ======================
-// KONFIGURASI DATABASE (RAILWAY)
+// AMBIL DATA DARI ENV
 // ======================
-const dbConfig = {
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
-  port: Number(process.env.MYSQLPORT),
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-};
+const dbUrl = process.env.MYSQL_PUBLIC_URL;
+
+// Jika variabel kosong, kasih peringatan keras
+if (!dbUrl) {
+    console.log('--------------------------------------------------');
+    console.error('❌ ERROR: MYSQL_PUBLIC_URL TIDAK TERBACA!');
+    console.log('Pastikan file .env ada di folder ROOT (CABAI), bukan di dalam folder backend.');
+    console.log('--------------------------------------------------');
+}
+
+// Buat pool (wadah koneksi)
+const pool = dbUrl ? mysql.createPool(dbUrl) : null;
 
 // ======================
-// BUAT CONNECTION POOL
-// ======================
-const pool = mysql.createPool(dbConfig);
-
-// ======================
-// TEST KONEKSI
+// TEST KONEKSI KE RAILWAY
 // ======================
 (async () => {
-  try {
-    const conn = await pool.getConnection();
-    console.log('✅ DATABASE RAILWAY TERHUBUNG');
-    conn.release();
-  } catch (err) {
-    console.error('❌ GAGAL KONEK DATABASE');
-    console.error(err.message);
-  }
+    if (!pool) return;
+    try {
+        const conn = await pool.getConnection();
+        console.log('✅ DATABASE RAILWAY TERHUBUNG (PUBLIC)');
+        conn.release();
+    } catch (err) {
+        console.error('❌ GAGAL KONEK KE DATABASE RAILWAY');
+        console.error('Pesan: ', err.message);
+    }
 })();
 
 // ======================
-// FUNGSI DATABASE
+// FUNGSI-FUNGSI DATABASE
 // ======================
 async function getAllGejalaForFrontend() {
-  const [rows] = await pool.query(
-    'SELECT code AS id, name AS text, category FROM symptoms ORDER BY category, code'
-  );
-  return rows;
+    if (!pool) return [];
+    const [rows] = await pool.query(
+        'SELECT code AS id, name AS text, category FROM symptoms ORDER BY category, code'
+    );
+    return rows;
 }
 
 async function getAllRules() {
-  const [rows] = await pool.query(
-    'SELECT symptom_code AS id_gejala, disease_code AS id_penyakit FROM rules'
-  );
-  return rows;
+    if (!pool) return [];
+    const [rows] = await pool.query(
+        'SELECT symptom_code AS id_gejala, disease_code AS id_penyakit FROM rules'
+    );
+    return rows;
 }
 
 async function getDiseaseDetailsByCodes(codes) {
-  if (!codes.length) return [];
-  const placeholders = codes.map(() => '?').join(',');
-  const [rows] = await pool.query(
-    `SELECT code, name, description, solution FROM penyakit WHERE code IN (${placeholders})`,
-    codes
-  );
-  return rows;
+    if (!pool || !codes.length) return [];
+    const placeholders = codes.map(() => '?').join(',');
+    const [rows] = await pool.query(
+        `SELECT code, name, description, solution 
+         FROM penyakit 
+         WHERE code IN (${placeholders})`,
+        codes
+    );
+    return rows;
 }
 
 // ======================
 // EXPORT
 // ======================
 module.exports = {
-  pool,
-  getAllGejalaForFrontend,
-  getAllRules,
-  getDiseaseDetailsByCodes
+    pool,
+    getAllGejalaForFrontend,
+    getAllRules,
+    getDiseaseDetailsByCodes
 };
