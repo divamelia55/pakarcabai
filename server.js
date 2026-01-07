@@ -1,12 +1,9 @@
 require('dotenv').config(); 
-// Baris di atas WAJIB ada di paling atas supaya db.js bisa baca MYSQL_PUBLIC_URL
-
-// server.js (ROOT FOLDER)
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+// Import router dan database
 const apiRouter = require('./backend/api');
 const db = require('./backend/db');
 
@@ -16,15 +13,31 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ======================
-// Middleware
+// 1. Middleware
 // ======================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ======================
-// AUTH LOGIN ADMIN
+// 2. Akses Folder Frontend (Statik)
 // ======================
+// Baris ini sangat penting agar file .html, .css, .js di folder frontend bisa dibaca
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// ======================
+// 3. API Routes
+// ======================
+
+// API Health Check
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API Pakar Cabai berjalan dengan baik'
+  });
+});
+
+// Auth Login Admin
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -51,50 +64,39 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({
       success: true,
       message: 'Login berhasil',
-      admin: {
-        id: rows[0].id,
-        username: rows[0].username
-      }
+      admin: { id: rows[0].id, username: rows[0].username }
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// ======================
-// API HEALTH CHECK (PENTING)
-// ======================
-app.get('/api', (req, res) => {
-  res.json({
-    success: true,
-    message: 'API Pakar Cabai berjalan dengan baik'
-  });
-});
-
-// ======================
-// API ROUTES LAIN
-// ======================
+// Gunakan API Router luar (backend/api.js)
 app.use('/api', apiRouter);
 
 // ======================
-// FRONTEND (OPTIONAL)
+// 4. Routing Halaman Utama
 // ======================
-const frontendPath = path.join(__dirname, 'frontend');
-app.use(express.static(frontendPath));
 
-// ======================
-// ROOT ROUTE
-// ======================
+// Mengarahkan domain utama langsung ke index.html
 app.get('/', (req, res) => {
-  res.send('✅ Server Pakar Cabai berjalan di Vercel');
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+// Menangani akses file HTML tanpa .html (Opsional tapi membantu)
+app.get('/:page', (req, res, next) => {
+  const page = req.params.page;
+  if (!page.includes('.')) {
+    return res.sendFile(path.join(__dirname, 'frontend', `${page}.html`), (err) => {
+      if (err) next();
+    });
+  }
+  next();
 });
 
 // ======================
-// START SERVER (LOCAL ONLY)
+// 5. Jalankan Server (Local Only)
 // ======================
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
@@ -102,7 +104,5 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// ======================
-// EXPORT FOR VERCEL
-// ======================
+// Export untuk Vercel
 module.exports = app;
