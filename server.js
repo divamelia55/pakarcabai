@@ -20,13 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ======================
-// 2. Akses Folder Frontend (Statik)
-// ======================
-// Baris ini sangat penting agar file .html, .css, .js di folder frontend bisa dibaca
-app.use(express.static(path.join(__dirname, 'frontend')));
-
-// ======================
-// 3. API Routes
+// 2. API Routes (Dahulukan API)
 // ======================
 
 // API Health Check
@@ -40,27 +34,15 @@ app.get('/api/health', (req, res) => {
 // Auth Login Admin
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
-
   if (!username || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'Username dan password wajib diisi'
-    });
+    return res.status(400).json({ success: false, message: 'Username dan password wajib diisi' });
   }
 
   try {
-    const [rows] = await db.pool.query(
-      'SELECT * FROM admins WHERE username = ?',
-      [username]
-    );
-
+    const [rows] = await db.pool.query('SELECT * FROM admins WHERE username = ?', [username]);
     if (rows.length === 0 || rows[0].password !== password) {
-      return res.status(401).json({
-        success: false,
-        message: 'Username atau password salah'
-      });
+      return res.status(401).json({ success: false, message: 'Username atau password salah' });
     }
-
     res.json({
       success: true,
       message: 'Login berhasil',
@@ -72,31 +54,42 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Gunakan API Router luar (backend/api.js)
+// Gunakan API Router luar
 app.use('/api', apiRouter);
 
 // ======================
-// 4. Routing Halaman Utama
+// 3. Akses Folder Frontend & Routing
 // ======================
 
-// Mengarahkan domain utama langsung ke index.html
+// Baca file statis (CSS, JS, Gambar) dari folder frontend
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// Handle rute spesifik (seperti /admin_login) agar mencari file .html nya
+app.get('/:page', (req, res, next) => {
+  const page = req.params.page;
+  // Jika akses root atau API, abaikan fungsi ini
+  if (!page || page.startsWith('api')) return next();
+
+  const filePath = path.join(__dirname, 'frontend', `${page}.html`);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      next(); // Jika file .html tidak ada, lanjut ke handler berikutnya
+    }
+  });
+});
+
+// Halaman Utama (index.html)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-// Menangani akses file HTML tanpa .html (Opsional tapi membantu)
-app.get('/:page', (req, res, next) => {
-  const page = req.params.page;
-  if (!page.includes('.')) {
-    return res.sendFile(path.join(__dirname, 'frontend', `${page}.html`), (err) => {
-      if (err) next();
-    });
-  }
-  next();
+// Fallback: Jika rute tidak dikenal, balikkan ke index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
 // ======================
-// 5. Jalankan Server (Local Only)
+// 4. Jalankan Server (Local Only)
 // ======================
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
