@@ -3,15 +3,14 @@
 const mysql = require('mysql2/promise');
 
 // ======================
-// KONFIGURASI DATABASE
-// (PAKAI ENV, AMAN UNTUK VERCEL)
+// KONFIGURASI DATABASE (RAILWAY)
 // ======================
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'cabai_db',
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port: Number(process.env.MYSQLPORT),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -23,24 +22,22 @@ const dbConfig = {
 const pool = mysql.createPool(dbConfig);
 
 // ======================
-// TEST KONEKSI (AMAN DI VERCEL)
+// TEST KONEKSI
 // ======================
 (async () => {
   try {
-    const connection = await pool.getConnection();
-    console.log('✅ KONEKSI DATABASE BERHASIL');
-    connection.release();
-  } catch (error) {
-    console.error('⚠️ DATABASE BELUM TERHUBUNG');
-    console.error(error.message);
+    const conn = await pool.getConnection();
+    console.log('✅ DATABASE RAILWAY TERHUBUNG');
+    conn.release();
+  } catch (err) {
+    console.error('❌ GAGAL KONEK DATABASE');
+    console.error(err.message);
   }
 })();
 
 // ======================
 // FUNGSI DATABASE
 // ======================
-
-// Ambil semua gejala
 async function getAllGejalaForFrontend() {
   const [rows] = await pool.query(
     'SELECT code AS id, name AS text, category FROM symptoms ORDER BY category, code'
@@ -48,7 +45,6 @@ async function getAllGejalaForFrontend() {
   return rows;
 }
 
-// Ambil semua rules
 async function getAllRules() {
   const [rows] = await pool.query(
     'SELECT symptom_code AS id_gejala, disease_code AS id_penyakit FROM rules'
@@ -56,17 +52,13 @@ async function getAllRules() {
   return rows;
 }
 
-// Ambil detail penyakit
 async function getDiseaseDetailsByCodes(codes) {
   if (!codes.length) return [];
-
   const placeholders = codes.map(() => '?').join(',');
-  const query = `
-    SELECT code, name, description, solution
-    FROM penyakit
-    WHERE code IN (${placeholders})
-  `;
-  const [rows] = await pool.query(query, codes);
+  const [rows] = await pool.query(
+    `SELECT code, name, description, solution FROM penyakit WHERE code IN (${placeholders})`,
+    codes
+  );
   return rows;
 }
 
